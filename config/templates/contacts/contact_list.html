@@ -11,7 +11,7 @@
             <th>Phone</th>
             <th>City</th>
             <th>Status</th>
-            <th>Details</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -23,7 +23,11 @@
             <td>{{ contact.phone_number }}</td>
             <td>{{ contact.city }}</td>
             <td>{{ contact.status }}</td>
-            <td><a href="{% url 'contact_detail' contact.id %}">details</a></td>
+            <td>
+                <a href="{% url 'contact_detail' contact.pk %}">View</a> |
+                <a href="{% url 'contact_edit' contact.pk %}">Edit</a> |
+                <a href="{% url 'contact_delete' contact.pk %}">Delete</a>
+            </td>
         </tr>
         {% empty %}
         <tr>
@@ -33,4 +37,6 @@
     </tbody>
   
 </table>
+
+<a href="{% url 'contact_add' %}">Add New Contact</a>
 {% endblock %}
