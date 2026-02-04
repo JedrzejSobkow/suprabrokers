@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from django.views.generic import ListView
+from .models import Contact
 
-# Create your views here.
+class ContactListView(ListView):
+    model = Contact
+    template_name = 'contacts/contact_list.html'
+    context_object_name = 'contacts'
+    paginate_by = 10
+    ordering = ['last_name', 'created_at'] 
