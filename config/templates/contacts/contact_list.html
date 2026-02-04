@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 <h1>Contact List</h1>
@@ -11,6 +12,7 @@
             <th>Phone</th>
             <th>City</th>
             <th>Status</th>
+            <th>Weather</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -23,6 +25,16 @@
             <td>{{ contact.phone_number }}</td>
             <td>{{ contact.city }}</td>
             <td>{{ contact.status }}</td>
+            <td>
+                {% if contact.weather %}
+                <img src="{% static contact.weather.icon %}" alt="{{ contact.weather.description }}">
+                <div>
+                    {{ contact.weather.description }}<br>
+                    {{ contact.weather.current.temperature }} {{ contact.weather.units.temperature }}<br>
+                    {{ contact.weather.current.windspeed }} {{ contact.weather.units.windspeed }}
+                </div>
+                {% endif %}
+            </td>
             <td>
                 <a href="{% url 'contact_detail' contact.pk %}">View</a> |
                 <a href="{% url 'contact_edit' contact.pk %}">Edit</a> |
