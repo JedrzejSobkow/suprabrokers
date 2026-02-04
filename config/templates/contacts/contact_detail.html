@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ object.first_name }} {{ object.last_name }}</h1>
+<ul>
+  <li>Email: {{ object.email }}</li>
+  <li>Phone: {{ object.phone_number }}</li>
+  <li>City: {{ object.city }}</li>
+  <li>Status: {{ object.status }}</li>
+  <li>Added: {{ object.created_at }}</li>
+</ul>
+<a href="{% url 'contact_list' %}">Back to list</a>
+{% endblock %}

@@ -1,4 +1,4 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from .models import Contact
 
 class ContactListView(ListView):
@@ -7,3 +7,7 @@ class ContactListView(ListView):
     context_object_name = 'contacts'
     paginate_by = 10
     ordering = ['last_name', 'created_at'] 
+    
+class ContactDetailView(DetailView):
+    model = Contact
+    template_name = 'contacts/contact_detail.html'
