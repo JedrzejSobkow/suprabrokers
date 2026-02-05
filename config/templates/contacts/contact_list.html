@@ -3,6 +3,10 @@
 
 {% block content %}
 <h1>Contact List</h1>
+<form method="get" action="{% url 'contact_list' %}">
+    <input type="text" name="q" placeholder="Search by first or last name" value="{{ request.GET.q }}">
+    <button type="submit">Search</button>
+</form>
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -48,15 +52,15 @@
 {% if is_paginated %}
 <div class="pagination">
     {% if page_obj.has_previous %}
-    <a href="?page=1">&laquo;First</a>
-    <a href="?page={{ page_obj.previous_page_number }}">&lsaquo;Previous</a>
+    <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo;First</a>
+    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&lsaquo;Previous</a>
     {% endif %}
 
     <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
 
     {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}">Next&rsaquo;</a>
-    <a href="?page={{ page_obj.paginator.num_pages }}">Last&raquo;</a>
+    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next&rsaquo;</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Last&raquo;</a>
     {% endif %}
 </div>
 {% endif %}

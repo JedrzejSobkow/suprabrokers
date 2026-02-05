@@ -16,6 +16,17 @@ class ContactListView(ListView):
     paginate_by = 10
     ordering = ['last_name', 'created_at'] 
     
+    def get_queryset(self):
+        qs = super().get_queryset()
+        query = self.request.GET.get('q', '').strip()
+        if query:
+            qs = qs.filter(
+                first_name__icontains=query
+            ) | qs.filter(
+                last_name__icontains=query
+            )
+        return qs
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         for contact in context['contacts']:
