@@ -33,7 +33,7 @@ def get_coordinates(city_name):
     if not coordinates:
         response = requests.get(
             'https://nominatim.openstreetmap.org/search',
-            headers = {"User-Agent": "contacts-app/1.0 (your@email.com)"},
+            headers = {"User-Agent": "contacts-app/1.0 (jedrzej@email.com)"},
             params = {'q': city_name, 'format': 'json', 'limit': 1}
         ).json()
         if response:
