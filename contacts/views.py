@@ -10,6 +10,8 @@ from .forms import ContactForm
 from .models import Contact, ContactStatus
 from .utils import validate_contact_row, get_coordinates, get_weather
 
+EXPECTED_HEADERS = ["first_name", "last_name", "email", "phone_number", "city", "status"]
+
 class ContactListView(ListView):
     model = Contact
     template_name = 'contacts/contact_list.html'
@@ -95,7 +97,15 @@ def preview_csv(request):
             return JsonResponse({"error": "The file must be a CSV"}, status=400)
 
         decoded_file = csv_file.read().decode('utf-8-sig').splitlines()
-        reader = csv.DictReader(decoded_file)
+        if not decoded_file or all(not line.strip() for line in decoded_file): # Empty file
+            return JsonResponse({"rows": [], "empty_file": True})
+        
+        first_row = decoded_file[0].split(",")
+        has_header = all(h.strip().lower() in EXPECTED_HEADERS for h in first_row)
+
+        data_lines = decoded_file[1:] if has_header else decoded_file
+
+        reader = csv.DictReader(data_lines, fieldnames=EXPECTED_HEADERS)
         
         existing_emails = set(Contact.objects.values_list('email', flat=True))
         existing_phones = set(Contact.objects.values_list('phone_number', flat=True))
@@ -104,13 +114,19 @@ def preview_csv(request):
         imported_rows = []
 
         for row in reader:
+            if not any(value.strip() for value in row.values()):
+                continue
+            
             errors = validate_contact_row(row, existing_emails, existing_phones, valid_statuses)
             imported_rows.append({
                 "row": row,
                 "errors": errors,
                 "is_valid": len(errors) == 0
             })
-
+            
+        if not imported_rows:
+            return JsonResponse({"rows": [], "empty_file": True})
+        
         return JsonResponse({"rows": imported_rows})
 
     return JsonResponse({"error": "No file uploaded"}, status=400)
@@ -159,7 +175,7 @@ def export_contacts_csv(request):
     response.write('\ufeff')
 
     writer = csv.writer(response)
-    writer.writerow(['first_name', 'last_name', 'email', 'phone', 'city', 'status'])
+    writer.writerow(EXPECTED_HEADERS)
 
 
     for contact in contacts:
