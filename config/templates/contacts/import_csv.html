@@ -1,6 +1,13 @@
 {% extends "base.html" %}
+
 {% block content %}
 <h1>Import Contacts from CSV</h1>
+
+<div class="mb-3">
+    <a href="{% url 'contact_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to list
+    </a>
+</div>
 
 <form id="csvForm" enctype="multipart/form-data" class="mb-3 row g-2">
     {% csrf_token %}
