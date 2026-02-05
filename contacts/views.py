@@ -1,6 +1,6 @@
 import csv
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.shortcuts import render
@@ -50,7 +50,7 @@ def preview_csv(request):
         if not csv_file.name.endswith('.csv'):
             return JsonResponse({"error": "The file must be a CSV"}, status=400)
 
-        decoded_file = csv_file.read().decode('utf-8').splitlines()
+        decoded_file = csv_file.read().decode('utf-8-sig').splitlines()
         reader = csv.DictReader(decoded_file)
         
         existing_emails = set(Contact.objects.values_list('email', flat=True))
@@ -105,3 +105,27 @@ def import_csv_json(request):
         return JsonResponse({"success": True, "created": created_count})
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
+def export_contacts_csv(request):
+    contacts = Contact.objects.all()
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="contacts_export.csv"'
+
+    response.write('\ufeff')
+
+    writer = csv.writer(response)
+    writer.writerow(['first_name', 'last_name', 'email', 'phone', 'city', 'status'])
+
+
+    for contact in contacts:
+        writer.writerow([
+            contact.first_name,
+            contact.last_name,
+            contact.email,
+            contact.phone_number,
+            contact.city,
+            contact.status.name if contact.status else ''
+        ])
+
+    return response

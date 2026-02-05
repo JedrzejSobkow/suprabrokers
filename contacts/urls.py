@@ -7,7 +7,8 @@ from .views import (
     ContactDeleteView, 
     preview_csv, 
     import_csv_page,
-    import_csv_json
+    import_csv_json,
+    export_contacts_csv
 )
 from . import api_views
 
@@ -24,4 +25,5 @@ urlpatterns = [
     path('import/', import_csv_page, name='import_csv_page'),
     path('import/preview/', preview_csv, name='preview_csv'),
     path('import/json/', import_csv_json, name='import_csv_json'),
+    path('export/', export_contacts_csv, name='export_csv'),
 ]
