@@ -10,14 +10,56 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
+        
+            <th>
+                First Name
+                <span class="sort-buttons">
+                    <a href="?sort=first_name&dir=asc{% if current_query %}&q={{ current_query }}{% endif %}"
+                       class="sort-btn {% if current_sort == 'first_name' and current_dir == 'asc' %}active{% endif %}">
+                        ↑
+                    </a>
+                    <a href="?sort=first_name&dir=desc{% if current_query %}&q={{ current_query }}{% endif %}"
+                       class="sort-btn {% if current_sort == 'first_name' and current_dir == 'desc' %}active{% endif %}">
+                        ↓
+                    </a>
+                </span>
+            </th>
+        
+            <th>
+                Last Name
+                <span class="sort-buttons">
+                    <a href="?sort=last_name&dir=asc{% if current_query %}&q={{ current_query }}{% endif %}"
+                       class="sort-btn {% if current_sort == 'last_name' and current_dir == 'asc' %}active{% endif %}">
+                        ↑
+                    </a>
+                    <a href="?sort=last_name&dir=desc{% if current_query %}&q={{ current_query }}{% endif %}"
+                       class="sort-btn {% if current_sort == 'last_name' and current_dir == 'desc' %}active{% endif %}">
+                        ↓
+                    </a>
+                </span>
+            </th>
+        
             <th>Email</th>
             <th>Phone</th>
             <th>City</th>
             <th>Status</th>
             <th>Weather</th>
             <th>Actions</th>
+        
+            <th>
+                Contact Created
+                <span class="sort-buttons">
+                    <a href="?sort=created_at&dir=asc{% if current_query %}&q={{ current_query }}{% endif %}"
+                       class="sort-btn {% if current_sort == 'created_at' and current_dir == 'asc' %}active{% endif %}">
+                        ↑
+                    </a>
+                    <a href="?sort=created_at&dir=desc{% if current_query %}&q={{ current_query }}{% endif %}"
+                       class="sort-btn {% if current_sort == 'created_at' and current_dir == 'desc' %}active{% endif %}">
+                        ↓
+                    </a>
+                </span>
+            </th>
+        
         </tr>
     </thead>
     <tbody>
@@ -39,6 +81,7 @@
                 <a href="{% url 'contact_edit' contact.pk %}">Edit</a> |
                 <a href="{% url 'contact_delete' contact.pk %}">Delete</a>
             </td>
+            <td>{{ contact.created_at }}</td>
         </tr>
         {% empty %}
         <tr>
@@ -52,21 +95,32 @@
 {% if is_paginated %}
 <div class="pagination">
     {% if page_obj.has_previous %}
-    <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo;First</a>
-    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&lsaquo;Previous</a>
+    <a href="?page=1{% if current_query %}&q={{ current_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_dir %}&dir={{ current_dir }}{% endif %}">
+    &laquo; First
+    </a>
+
+    <a href="?page={{ page_obj.previous_page_number }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_dir %}&dir={{ current_dir }}{% endif %}">
+    &lsaquo; Previous
+    </a>
     {% endif %}
 
     <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
 
     {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next&rsaquo;</a>
-    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Last&raquo;</a>
+    <a href="?page={{ page_obj.next_page_number }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_dir %}&dir={{ current_dir }}{% endif %}">
+    Next &rsaquo;
+    </a>
+
+    <a href="?page={{ page_obj.paginator.num_pages }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_dir %}&dir={{ current_dir }}{% endif %}">
+    Last &raquo;
+    </a>
     {% endif %}
 </div>
 {% endif %}
 
 <a href="{% url 'contact_add' %}">Add New Contact</a> <br>
-<a href="{% url 'export_csv' %}">Export CSV</a>
+<a href="{% url 'export_csv' %}">Export Contacts</a>
+<a href="{% url 'import_csv_page' %}">Import Contacts</a>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {

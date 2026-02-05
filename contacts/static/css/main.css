@@ -1,0 +1,20 @@
+.sort-buttons {
+    margin-left: 6px;
+    white-space: nowrap;
+}
+
+.sort-btn {
+    text-decoration: none;
+    color: #999;
+    font-size: 0.9em;
+    margin-left: 3px;
+}
+
+.sort-btn:hover {
+    color: #000;
+}
+
+.sort-btn.active {
+    color: #000;
+    font-weight: bold;
+}

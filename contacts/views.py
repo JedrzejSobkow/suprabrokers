@@ -1,5 +1,6 @@
 import csv
 import json
+from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.decorators.http import require_GET
@@ -14,21 +15,35 @@ class ContactListView(ListView):
     template_name = 'contacts/contact_list.html'
     context_object_name = 'contacts'
     paginate_by = 10
-    ordering = ['last_name', 'created_at'] 
+    
+    def get_ordering(self):
+        sort = self.request.GET.get('sort')
+        direction = self.request.GET.get('dir', 'asc')
+        ordering = ['last_name', 'created_at']
+
+        if sort in ['first_name', 'last_name', 'created_at']:
+            if direction == 'desc':
+                ordering = [f'-{sort}']
+            else:
+                ordering = [sort]
+
+        return ordering
     
     def get_queryset(self):
         qs = super().get_queryset()
         query = self.request.GET.get('q', '').strip()
         if query:
             qs = qs.filter(
-                first_name__icontains=query
-            ) | qs.filter(
-                last_name__icontains=query
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query)
             )
-        return qs
+        return qs.order_by(*self.get_ordering())
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['current_sort'] = self.request.GET.get('sort', '')
+        context['current_dir'] = self.request.GET.get('dir', 'asc')
+        context['current_query'] = self.request.GET.get('q', '')
         for contact in context['contacts']:
             contact.coordinates = None
             contact.weather = None
