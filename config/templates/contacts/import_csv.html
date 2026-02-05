@@ -61,6 +61,50 @@
         tbody.appendChild(row);
       });
     }
+
+    // Import button clicked event
+    document.getElementById('importButton').addEventListener('click', async function() {
+        const rows = document.querySelectorAll('#previewTable tbody tr');
+        const selected_rows = [];
+    
+        rows.forEach(row => {
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            if (checkbox && checkbox.checked) {
+                const cells = row.querySelectorAll('td');
+                selected_rows.push({
+                    row: {
+                        first_name: cells[1].textContent,
+                        last_name: cells[2].textContent,
+                        email: cells[3].textContent,
+                        phone_number: cells[4].textContent,
+                        city: cells[5].textContent,
+                        status: cells[6].textContent
+                    }
+                });
+            }
+        });
+    
+        if (selected_rows.length === 0) return alert("Nie zaznaczono żadnych rekordów!");
+    
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+        const res = await fetch("{% url 'import_csv_json' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({selected_rows})
+        });
+    
+        const data = await res.json();
+        if (data.success) {
+            alert(`Zaimportowano ${data.created} rekordów`);
+            location.reload();
+        } else {
+            alert("Błąd importu: " + (data.error || "Nieznany błąd"));
+        }
+    });
     
     // File change event
     document.getElementById('csvFile').addEventListener('change', function() {
@@ -70,7 +114,7 @@
       }
     });
 
-    // Select all clicked
+    // Select all clicked event
     document.getElementById('selectAllBtn').addEventListener('click', function() {
         const checkboxes = document.querySelectorAll('#previewTable tbody input[type="checkbox"]');
         checkboxes.forEach(cb => { if (!cb.disabled) cb.checked = true; });

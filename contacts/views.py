@@ -1,4 +1,5 @@
 import csv
+import json
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -73,3 +74,34 @@ def preview_csv(request):
 
 def import_csv_page(request):
     return render(request, 'contacts/import_csv.html')
+
+
+
+def import_csv_json(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            selected_rows = data.get("selected_rows", [])
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+        created_count = 0
+        for item in selected_rows:
+            row = item["row"]
+
+            status_name = row.get("status")
+            status_obj = ContactStatus.objects.filter(name=status_name).first() if status_name else None
+
+            Contact.objects.create(
+                first_name=row.get("first_name"),
+                last_name=row.get("last_name"),
+                email=row.get("email"),
+                phone_number=row.get("phone_number"),
+                city=row.get("city"),
+                status=status_obj
+            )
+            created_count += 1
+
+        return JsonResponse({"success": True, "created": created_count})
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)

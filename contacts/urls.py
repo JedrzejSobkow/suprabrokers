@@ -1,5 +1,14 @@
 from django.urls import path
-from .views import ContactListView, ContactDetailView, ContactUpdateView, ContactCreateView, ContactDeleteView, preview_csv, import_csv_page
+from .views import (
+    ContactListView, 
+    ContactDetailView, 
+    ContactUpdateView, 
+    ContactCreateView, 
+    ContactDeleteView, 
+    preview_csv, 
+    import_csv_page,
+    import_csv_json
+)
 from . import api_views
 
 urlpatterns = [
@@ -14,4 +23,5 @@ urlpatterns = [
     
     path('import/', import_csv_page, name='import_csv_page'),
     path('import/preview/', preview_csv, name='preview_csv'),
+    path('import/json/', import_csv_json, name='import_csv_json'),
 ]
