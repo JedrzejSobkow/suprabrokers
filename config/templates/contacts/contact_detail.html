@@ -1,13 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ object.first_name }} {{ object.last_name }}</h1>
-<ul>
-  <li>Email: {{ object.email }}</li>
-  <li>Phone: {{ object.phone_number }}</li>
-  <li>City: {{ object.city }}</li>
-  <li>Status: {{ object.status }}</li>
-  <li>Added: {{ object.created_at }}</li>
-</ul>
-<a href="{% url 'contact_list' %}">Back to list</a>
+<h1>Contact details</h1>
+
+<div class="mb-3">
+  <a href="{% url 'contact_list' %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back to list
+  </a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <h1 class="h4 mb-0">{{ object.first_name }} {{ object.last_name }}</h1>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Email:</strong> {{ object.email }}</li>
+            <li class="list-group-item"><strong>Phone:</strong> {{ object.phone_number }}</li>
+            <li class="list-group-item"><strong>City:</strong> {{ object.city }}</li>
+            <li class="list-group-item"><strong>Status:</strong> {{ object.status }}</li>
+            <li class="list-group-item"><strong>Added:</strong> {{ object.created_at|date:"Y.m.d H:i" }}</li>
+        </ul>
+    </div>
+    <div class="card-footer d-flex gap-2">
+        <a href="{% url 'contact_edit' object.pk %}" class="btn btn-sm btn-outline-secondary" 
+           data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        <a href="{% url 'contact_delete' object.pk %}" class="btn btn-sm btn-outline-danger" 
+           data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+            <i class="bi bi-trash"></i> Delete
+        </a>
+    </div>
+</div>
 {% endblock %}
