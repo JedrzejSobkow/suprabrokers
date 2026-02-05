@@ -21,12 +21,6 @@ def load_weather_codes():
 
     return data
 
-def enrich_contacts(contacts):
-    for contact in contacts:
-            lat, lon = get_coordinates(contact.city)
-            contact.coordinates = (lat, lon)
-            contact.weather = get_weather(lat, lon, contact.city)
-
 def get_coordinates(city_name):
     cache_key = f"city_{city_name}"
     coordinates = cache.get(cache_key)

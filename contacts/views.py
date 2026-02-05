@@ -2,11 +2,12 @@ import csv
 import json
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.decorators.http import require_GET
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from .forms import ContactForm
 from .models import Contact, ContactStatus
-from .utils import enrich_contacts, validate_contact_row
+from .utils import validate_contact_row, get_coordinates, get_weather
 
 class ContactListView(ListView):
     model = Contact
@@ -17,7 +18,9 @@ class ContactListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        enrich_contacts(context['contacts'])
+        for contact in context['contacts']:
+            contact.coordinates = None
+            contact.weather = None
         return context
 
 class ContactDetailView(DetailView):
@@ -42,6 +45,21 @@ class ContactDeleteView(DeleteView):
     success_url = reverse_lazy('contact_list')
     
 
+@require_GET
+def contact_weather(request, pk):
+    from .models import Contact
+    try:
+        contact = Contact.objects.get(pk=pk)
+    except Contact.DoesNotExist:
+        return JsonResponse({"error": "Contact not found"}, status=404)
+
+    lat, lon = get_coordinates(contact.city)
+    weather = get_weather(lat, lon, contact.city)
+    return JsonResponse({
+        "coordinates": {"lat": lat, "lon": lon},
+        "weather": weather
+    })
+    
 
 def preview_csv(request):
     if request.method == "POST" and request.FILES.get("csv_file"):

@@ -26,14 +26,9 @@
             <td>{{ contact.city }}</td>
             <td>{{ contact.status }}</td>
             <td>
-                {% if contact.weather %}
-                <img src="{% static contact.weather.icon %}" alt="{{ contact.weather.description }}">
-                <div>
-                    {{ contact.weather.description }}<br>
-                    {{ contact.weather.current.temperature }} {{ contact.weather.units.temperature }}<br>
-                    {{ contact.weather.current.windspeed }} {{ contact.weather.units.windspeed }}
+                <div class="weather-info" id="weather-{{ contact.id }}">
+                    Loading...
                 </div>
-                {% endif %}
             </td>
             <td>
                 <a href="{% url 'contact_detail' contact.pk %}">View</a> |
@@ -68,4 +63,31 @@
 
 <a href="{% url 'contact_add' %}">Add New Contact</a> <br>
 <a href="{% url 'export_csv' %}">Export CSV</a>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('.weather-info').forEach(async container => {
+            const contactId = container.id.split('-')[1];
+            
+            try {
+                const res = await fetch(`/contacts/${contactId}/weather/`);
+                if (!res.ok) throw new Error("API error");
+                const data = await res.json();
+                
+                if (!data.weather || Object.keys(data.weather).length === 0) {
+                    container.textContent = "No data";
+                } else {
+                    container.innerHTML = `
+                        Description: ${data.weather.description || ''}<br>
+                        Temperature: ${data.weather.current?.temperature || ''} ${data.weather.units?.temperature || ''}<br>
+                        Windspeed: ${data.weather.current?.windspeed || ''} ${data.weather.units?.windspeed || ''}
+                        ${data.weather.icon ? `<img src="{% static '' %}${data.weather.icon}" alt="icon">` : ''}
+                    `;
+                }
+            } catch (err) {
+                container.textContent = "Failed to load weather";
+            }
+        });
+    });
+</script>
 {% endblock %}

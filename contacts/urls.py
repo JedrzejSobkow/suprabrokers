@@ -5,6 +5,7 @@ from .views import (
     ContactUpdateView, 
     ContactCreateView, 
     ContactDeleteView, 
+    contact_weather,
     preview_csv, 
     import_csv_page,
     import_csv_json,
@@ -21,6 +22,8 @@ urlpatterns = [
     
     path('api/contacts/', api_views.ContactListCreateAPI.as_view(), name='api_contact_list'),
     path('api/contacts/<int:pk>/', api_views.ContactRetrieveUpdateDestroyAPI.as_view(), name='api_contact_detail'),
+    
+    path('<int:pk>/weather/', contact_weather, name='contact_weather'),
     
     path('import/', import_csv_page, name='import_csv_page'),
     path('import/preview/', preview_csv, name='preview_csv'),
