@@ -27,8 +27,11 @@
            data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
             <i class="bi bi-pencil"></i> Edit
         </a>
-        <a href="{% url 'contact_delete' object.pk %}" class="btn btn-sm btn-outline-danger" 
-           data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+        <a href="#"
+            class="btn btn-sm btn-outline-danger"
+            data-delete-url="{% url 'contact_delete' object.pk %}"
+            data-delete-name="{{ object }}"
+            data-delete-redirect="{% url 'contact_list' %}">
             <i class="bi bi-trash"></i> Delete
         </a>
     </div>

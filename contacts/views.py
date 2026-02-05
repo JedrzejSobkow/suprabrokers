@@ -1,5 +1,6 @@
 import csv
 import json
+from django.core.paginator import EmptyPage, Paginator
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -41,6 +42,25 @@ class ContactListView(ListView):
             )
         return qs.order_by(*self.get_ordering())
     
+    def paginate_queryset(self, queryset, page_size):
+        paginator = Paginator(queryset, page_size)
+        page = self.request.GET.get('page')
+
+        try:
+            page_number = int(page)
+        except (TypeError, ValueError):
+            page_number = 1
+
+        try:
+            page_obj = paginator.page(page_number)
+        except EmptyPage:
+            # if page > max return highest existing page
+            page_number = paginator.num_pages or 1
+            page_obj = paginator.page(page_number)
+
+        is_paginated = paginator.num_pages > 1
+        return paginator, page_obj, page_obj.object_list, is_paginated
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['current_sort'] = self.request.GET.get('sort', '')
@@ -69,8 +89,16 @@ class ContactUpdateView(UpdateView):
 
 class ContactDeleteView(DeleteView):
     model = Contact
-    template_name = 'contacts/contact_confirm_delete.html'
     success_url = reverse_lazy('contact_list')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+
+        return super().delete(request, *args, **kwargs)
     
 
 @require_GET

@@ -98,11 +98,14 @@
                        title="Edit">
                         <i class="bi bi-pencil"></i>
                     </a>
-                    <a href="{% url 'contact_delete' contact.pk %}" 
-                       class="btn btn-sm btn-outline-danger" 
-                       data-bs-toggle="tooltip" 
-                       data-bs-placement="top" 
-                       title="Delete">
+                    <a href="#"
+                        class="btn btn-sm btn-outline-danger"
+                        data-delete-url="{% url 'contact_delete' contact.pk %}"
+                        data-delete-name="{{ object }}"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top" 
+                        title="Delete">
+                        
                         <i class="bi bi-trash"></i>
                     </a>
                 </td>
