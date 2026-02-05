@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import re
 from django.core.cache import cache
 from django.conf import settings
 
@@ -84,3 +85,57 @@ def get_weather(lat, lon, city_name):
         cache.set(cache_key, weather, timeout = 60 * 30) # 30 minutes
 
     return weather
+
+PHONE_REGEX = re.compile(r'^\+?\d{7,15}$')
+
+def validate_contact_row(row, existing_emails, existing_phones, valid_statuses):
+    errors = []
+    email = row.get('email')
+    phone = row.get('phone_number')
+    status = row.get('status')
+
+        
+    # NOT NULL
+    if not row.get('first_name'):
+        errors.append("First name is required")
+    if not row.get('last_name'):
+        errors.append("Last name is required")
+    if not email:
+        errors.append("Email is required")
+    if not phone:
+        errors.append("Phone number is required")
+    if not row.get('city'):
+        errors.append("City is required")
+
+    # VALUES LENGTH
+    if row.get('first_name') and len(row['first_name']) > 50:
+        errors.append("First name too long")
+    if row.get('last_name') and len(row['last_name']) > 50:
+        errors.append("Last name too long")
+    if email and len(email) > 100:
+        errors.append("Email too long")
+    if row.get('city') and len(row['city']) > 100:
+        errors.append("City too long")
+    if status and len(status) > 50:
+        errors.append("Status too long")
+                
+    # PHONE REGEX
+    if phone and not PHONE_REGEX.match(phone):
+        errors.append("Phone number invalid format")
+
+    # UNIQUENESS
+    if email in existing_emails:
+        errors.append("Email already exists")
+    if phone in existing_phones:
+        errors.append("Phone number already exists")
+                
+    # STATUS VALIDATION
+    if status and status not in valid_statuses:
+        errors.append(f"Status '{status}' does not exist")
+
+
+    if not errors:
+        existing_emails.add(email)
+        existing_phones.add(phone)
+
+    return errors

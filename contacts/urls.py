@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ContactListView, ContactDetailView, ContactUpdateView, ContactCreateView, ContactDeleteView
+from .views import ContactListView, ContactDetailView, ContactUpdateView, ContactCreateView, ContactDeleteView, preview_csv, import_csv_page
 from . import api_views
 
 urlpatterns = [
@@ -11,4 +11,7 @@ urlpatterns = [
     
     path('api/contacts/', api_views.ContactListCreateAPI.as_view(), name='api_contact_list'),
     path('api/contacts/<int:pk>/', api_views.ContactRetrieveUpdateDestroyAPI.as_view(), name='api_contact_detail'),
+    
+    path('import/', import_csv_page, name='import_csv_page'),
+    path('import/preview/', preview_csv, name='preview_csv'),
 ]

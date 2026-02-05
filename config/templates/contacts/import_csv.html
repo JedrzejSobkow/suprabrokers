@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Import Contacts from CSV</h2>
+
+<form id="csvForm" enctype="multipart/form-data">
+    {% csrf_token %}
+  <input type="file" name="csv_file" id="csvFile" accept=".csv">
+</form>
+<button id="selectAllBtn">Select All</button>
+
+<table id="previewTable" border="1">
+  <thead>
+    <tr>
+      <th>Select</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>City</th>
+      <th>Status</th>
+      <th>Data errors</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<button id="importButton">Import Selected</button>
+
+<script>
+    async function previewCSV(file) {
+      const formData = new FormData();
+      formData.append('csv_file', file);
+      formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+      const res = await fetch("{% url 'preview_csv' %}", {
+        method: 'POST',
+        body: formData
+      });
+    
+      const data = await res.json();
+      const tbody = document.querySelector('#previewTable tbody');
+      tbody.innerHTML = '';
+    
+      data.rows.forEach((item) => {
+        const row = document.createElement('tr');
+        if (!item.is_valid) row.style.backgroundColor = '#f8d7da';
+    
+        const errorsHtml = item.errors.length > 0 ? item.errors.join('<br>') : '';
+    
+        row.innerHTML = `
+          <td><input type="checkbox" ${!item.is_valid ? 'disabled' : ''}></td>
+          <td>${item.row.first_name || ''}</td>
+          <td>${item.row.last_name || ''}</td>
+          <td>${item.row.email || ''}</td>
+          <td>${item.row.phone_number || ''}</td>
+          <td>${item.row.city || ''}</td>
+          <td>${item.row.status || ''}</td>
+          <td>${errorsHtml}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+    
+    // File change event
+    document.getElementById('csvFile').addEventListener('change', function() {
+      const file = this.files[0];
+      if (file) {
+        previewCSV(file);
+      }
+    });
+
+    // Select all clicked
+    document.getElementById('selectAllBtn').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('#previewTable tbody input[type="checkbox"]');
+        checkboxes.forEach(cb => { if (!cb.disabled) cb.checked = true; });
+      })
+    </script>
+{% endblock %}
