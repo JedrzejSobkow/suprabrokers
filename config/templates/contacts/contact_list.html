@@ -3,149 +3,169 @@
 
 {% block content %}
 <h1>Contact List</h1>
-<form method="get" action="{% url 'contact_list' %}">
-    <input type="text" name="q" placeholder="Search by first or last name" value="{{ request.GET.q }}">
-    <button type="submit">Search</button>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-sm-8 col-md-6 col-lg-4">
+        <input
+            type="text"
+            name="q"
+            class="form-control"
+            placeholder="Search by first or last name"
+            value="{{ request.GET.q }}"
+        >
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary">
+            Search
+        </button>
+    </div>
 </form>
-<table class="table table-bordered">
-    <thead>
-        <tr>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>First Name</span>
+                        <span class="sort-buttons">
+                            <a href="?sort=first_name&dir=asc{% if current_query %}&q={{ current_query }}{% endif %}"
+                               class="sort-btn {% if current_sort == 'first_name' and current_dir == 'asc' %}active{% endif %}">↑</a>
+                            <a href="?sort=first_name&dir=desc{% if current_query %}&q={{ current_query }}{% endif %}"
+                               class="sort-btn {% if current_sort == 'first_name' and current_dir == 'desc' %}active{% endif %}">↓</a>
+                        </span>
+                    </div>
+                </th>
         
-            <th>
-                First Name
-                <span class="sort-buttons">
-                    <a href="?sort=first_name&dir=asc{% if current_query %}&q={{ current_query }}{% endif %}"
-                       class="sort-btn {% if current_sort == 'first_name' and current_dir == 'asc' %}active{% endif %}">
-                        ↑
-                    </a>
-                    <a href="?sort=first_name&dir=desc{% if current_query %}&q={{ current_query }}{% endif %}"
-                       class="sort-btn {% if current_sort == 'first_name' and current_dir == 'desc' %}active{% endif %}">
-                        ↓
-                    </a>
-                </span>
-            </th>
+                <th>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Last Name</span>
+                        <span class="sort-buttons">
+                            <a href="?sort=last_name&dir=asc{% if current_query %}&q={{ current_query }}{% endif %}"
+                               class="sort-btn {% if current_sort == 'last_name' and current_dir == 'asc' %}active{% endif %}">↑</a>
+                            <a href="?sort=last_name&dir=desc{% if current_query %}&q={{ current_query }}{% endif %}"
+                               class="sort-btn {% if current_sort == 'last_name' and current_dir == 'desc' %}active{% endif %}">↓</a>
+                        </span>
+                    </div>
+                </th>
         
-            <th>
-                Last Name
-                <span class="sort-buttons">
-                    <a href="?sort=last_name&dir=asc{% if current_query %}&q={{ current_query }}{% endif %}"
-                       class="sort-btn {% if current_sort == 'last_name' and current_dir == 'asc' %}active{% endif %}">
-                        ↑
-                    </a>
-                    <a href="?sort=last_name&dir=desc{% if current_query %}&q={{ current_query }}{% endif %}"
-                       class="sort-btn {% if current_sort == 'last_name' and current_dir == 'desc' %}active{% endif %}">
-                        ↓
-                    </a>
-                </span>
-            </th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Weather</th>
+                <th>Status</th>
+                <th>Actions</th>
         
-            <th>Email</th>
-            <th>Phone</th>
-            <th>City</th>
-            <th>Status</th>
-            <th>Weather</th>
-            <th>Actions</th>
-        
-            <th>
-                Contact Created
-                <span class="sort-buttons">
-                    <a href="?sort=created_at&dir=asc{% if current_query %}&q={{ current_query }}{% endif %}"
-                       class="sort-btn {% if current_sort == 'created_at' and current_dir == 'asc' %}active{% endif %}">
-                        ↑
+                <th>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Contact Created</span>
+                        <span class="sort-buttons">
+                            <a href="?sort=created_at&dir=asc{% if current_query %}&q={{ current_query }}{% endif %}"
+                               class="sort-btn {% if current_sort == 'created_at' and current_dir == 'asc' %}active{% endif %}">↑</a>
+                            <a href="?sort=created_at&dir=desc{% if current_query %}&q={{ current_query }}{% endif %}"
+                               class="sort-btn {% if current_sort == 'created_at' and current_dir == 'desc' %}active{% endif %}">↓</a>
+                        </span>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contact in contacts %}
+            <tr>
+                <td>{{ contact.first_name }}</td>
+                <td>{{ contact.last_name }}</td>
+                <td>{{ contact.email }}</td>
+                <td>{{ contact.phone_number }}</td>
+                <td>{{ contact.city }}</td>
+                <td>
+                    <div class="weather-info d-flex flex-column align-items-start" id="weather-{{ contact.id }}">
+                        <span class="weather-loading text-muted">Loading...</span>
+                    </div>
+                </td>
+                <td>{{ contact.status }}</td>
+                <td class="text-nowrap">
+                    <a href="{% url 'contact_detail' contact.pk %}" 
+                       class="btn btn-sm btn-outline-primary" 
+                       data-bs-toggle="tooltip" 
+                       data-bs-placement="top" 
+                       title="View">
+                        <i class="bi bi-eye"></i>
                     </a>
-                    <a href="?sort=created_at&dir=desc{% if current_query %}&q={{ current_query }}{% endif %}"
-                       class="sort-btn {% if current_sort == 'created_at' and current_dir == 'desc' %}active{% endif %}">
-                        ↓
+                    <a href="{% url 'contact_edit' contact.pk %}" 
+                       class="btn btn-sm btn-outline-secondary" 
+                       data-bs-toggle="tooltip" 
+                       data-bs-placement="top" 
+                       title="Edit">
+                        <i class="bi bi-pencil"></i>
                     </a>
-                </span>
-            </th>
-        
-        </tr>
-    </thead>
-    <tbody>
-        {% for contact in contacts %}
-        <tr>
-            <td>{{ contact.first_name }}</td>
-            <td>{{ contact.last_name }}</td>
-            <td>{{ contact.email }}</td>
-            <td>{{ contact.phone_number }}</td>
-            <td>{{ contact.city }}</td>
-            <td>{{ contact.status }}</td>
-            <td>
-                <div class="weather-info" id="weather-{{ contact.id }}">
-                    Loading...
-                </div>
-            </td>
-            <td>
-                <a href="{% url 'contact_detail' contact.pk %}">View</a> |
-                <a href="{% url 'contact_edit' contact.pk %}">Edit</a> |
-                <a href="{% url 'contact_delete' contact.pk %}">Delete</a>
-            </td>
-            <td>{{ contact.created_at }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">No contacts available :(</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                    <a href="{% url 'contact_delete' contact.pk %}" 
+                       class="btn btn-sm btn-outline-danger" 
+                       data-bs-toggle="tooltip" 
+                       data-bs-placement="top" 
+                       title="Delete">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+                <td>{{ contact.created_at|date:"Y.m.d H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No contacts available :(</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% comment %} PAGINATION FOR CONTACT LIST {% endcomment %}
-{% if is_paginated %}
-<div class="pagination">
-    {% if page_obj.has_previous %}
-    <a href="?page=1{% if current_query %}&q={{ current_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_dir %}&dir={{ current_dir }}{% endif %}">
-    &laquo; First
-    </a>
-
-    <a href="?page={{ page_obj.previous_page_number }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_dir %}&dir={{ current_dir }}{% endif %}">
-    &lsaquo; Previous
-    </a>
-    {% endif %}
-
-    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-
-    {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_dir %}&dir={{ current_dir }}{% endif %}">
-    Next &rsaquo;
-    </a>
-
-    <a href="?page={{ page_obj.paginator.num_pages }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_dir %}&dir={{ current_dir }}{% endif %}">
-    Last &raquo;
-    </a>
-    {% endif %}
-</div>
-{% endif %}
-
-<a href="{% url 'contact_add' %}">Add New Contact</a> <br>
-<a href="{% url 'export_csv' %}">Export Contacts</a>
-<a href="{% url 'import_csv_page' %}">Import Contacts</a>
+{% include 'contacts/pagination.html' %}
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('.weather-info').forEach(async container => {
             const contactId = container.id.split('-')[1];
-            
+    
             try {
                 const res = await fetch(`/contacts/${contactId}/weather/`);
                 if (!res.ok) throw new Error("API error");
                 const data = await res.json();
-                
+    
+                container.innerHTML = ''; 
+    
                 if (!data.weather || Object.keys(data.weather).length === 0) {
                     container.textContent = "No data";
                 } else {
-                    container.innerHTML = `
-                        Description: ${data.weather.description || ''}<br>
-                        Temperature: ${data.weather.current?.temperature || ''} ${data.weather.units?.temperature || ''}<br>
-                        Windspeed: ${data.weather.current?.windspeed || ''} ${data.weather.units?.windspeed || ''}
-                        ${data.weather.icon ? `<img src="{% static '' %}${data.weather.icon}" alt="icon">` : ''}
+                    const topRow = document.createElement('div');
+                    topRow.className = 'd-flex align-items-center mb-1';
+    
+                    if (data.weather.icon) {
+                        const img = document.createElement('img');
+                        img.className = 'weather-icon me-2';
+                        img.src = `{% static '' %}${data.weather.icon}`;
+                        img.alt = 'icon';
+                        topRow.appendChild(img);
+                    }
+    
+                    const desc = document.createElement('span');
+                    desc.className = 'weather-description text-truncate';
+                    desc.textContent = data.weather.description || '';
+                    topRow.appendChild(desc);
+    
+                    const bottomRow = document.createElement('div');
+                    bottomRow.className = 'weather-stats small text-muted';
+                    bottomRow.innerHTML = `
+                        Temp: ${data.weather.current?.temperature || ''} ${data.weather.units?.temperature || ''}<br>
+                        Wind: ${data.weather.current?.windspeed || ''} ${data.weather.units?.windspeed || ''}
                     `;
+    
+                    container.appendChild(topRow);
+                    container.appendChild(bottomRow);
                 }
+    
             } catch (err) {
                 container.textContent = "Failed to load weather";
             }
         });
     });
-</script>
+    </script>
 {% endblock %}
