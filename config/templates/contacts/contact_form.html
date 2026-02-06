@@ -30,4 +30,27 @@
         <a href="{% url 'contact_list' %}" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', () => {
+                sessionStorage.setItem('toast', JSON.stringify({
+                    message: 'Contact has been saved.',
+                    type: 'success'
+                }));
+            });
+        }
+    
+        // Clear toast when manually routing to main page
+        document.querySelectorAll('a').forEach(btn => {
+            btn.addEventListener('click', () => {
+                sessionStorage.removeItem('toast');
+            });
+        });
+    
+    });
+    </script>
+
 {% endblock %}

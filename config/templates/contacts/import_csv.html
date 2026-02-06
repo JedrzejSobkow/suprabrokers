@@ -54,16 +54,10 @@ async function previewCSV(file) {
     const tbody = previewContainer.querySelector('tbody');
     tbody.innerHTML = '';
 
-    const existingAlert = document.querySelector('#previewContainer + .alert');
-    if (existingAlert) existingAlert.remove();
-
     if (!data.rows || data.rows.length === 0) {
         if (data.empty_file) {
             previewContainer.style.display = 'none';
-            previewContainer.insertAdjacentHTML(
-                'beforebegin',
-                '<div class="alert alert-warning">The uploaded CSV file is empty.</div>'
-            );
+            notyf.error("The uploaded CSV file is empty")
         }
         return;
     }
@@ -114,7 +108,7 @@ document.getElementById('importButton').addEventListener('click', async function
         }
     });
 
-    if (selected_rows.length === 0) return alert("Records not found!");
+    if (selected_rows.length === 0) return notyf.error("No contact was selected");
 
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
@@ -129,11 +123,14 @@ document.getElementById('importButton').addEventListener('click', async function
 
     const data = await res.json();
     if (data.success) {
-        alert(`Imported ${data.created} records`);
-        location.reload();
+        sessionStorage.setItem('toast', JSON.stringify({
+            message: `Imported ${data.created} records`,
+            type: 'success'
+        }));
+        
+        window.location.href = "{% url 'contact_list' %}";
     } else {
-        alert("Import error: " + (data.error || "Unknown error"));
-    }
+        notyf.error("Import error: " + (data.error || "Unknown error"));    }
 });
 
 // File change event

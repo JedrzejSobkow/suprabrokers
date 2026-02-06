@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }).then(res => {
       if (res.ok) {
+        sessionStorage.setItem('toast', JSON.stringify({message: `Contact has been deleted.`, type: 'success'}));
         if (redirectUrl) {
           window.location.href = redirectUrl;
         } else {
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       else {
-        // TODO ERROR TOAST
+        sessionStorage.setItem('toast', JSON.stringify({message: `An error occured`, type: 'error'}));
       }
     });
   }

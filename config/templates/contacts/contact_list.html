@@ -125,6 +125,16 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+
+        const toastJSON = sessionStorage.getItem('toast');
+        if (toastJSON) {
+            const toast = JSON.parse(toastJSON);
+            switch (toast.type) {
+                case 'success': notyf.success(toast.message); break;
+                case 'error': notyf.error(toast.message); break;
+            }
+            sessionStorage.removeItem('toast');
+        }
         document.querySelectorAll('.weather-info').forEach(async container => {
             const contactId = container.id.split('-')[1];
     
