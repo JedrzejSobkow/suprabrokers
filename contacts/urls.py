@@ -20,8 +20,8 @@ urlpatterns = [
     path('<int:pk>/edit/', ContactUpdateView.as_view(), name='contact_edit'),
     path('<int:pk>/delete/', ContactDeleteView.as_view(), name='contact_delete'),
     
-    path('api/contacts/', api_views.ContactListCreateAPI.as_view(), name='api_contact_list'),
-    path('api/contacts/<int:pk>/', api_views.ContactRetrieveUpdateDestroyAPI.as_view(), name='api_contact_detail'),
+    path('contacts/', api_views.ContactListCreateAPI.as_view(), name='api_contact_list'),
+    path('contacts/<int:pk>/', api_views.ContactRetrieveUpdateDestroyAPI.as_view(), name='api_contact_detail'),
     
     path('<int:pk>/weather/', contact_weather, name='contact_weather'),
     
