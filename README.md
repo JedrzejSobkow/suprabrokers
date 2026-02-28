@@ -20,8 +20,8 @@ A Django + DRF project for managing contacts, with CSV import/export, weather in
 1. Clone the repo:
 
 ```
-git clone https://github.com/JedrzejSobkow/suprabrokers
-cd suprabrokers
+git clone https://github.com/JedrzejSobkow/Contact-Manager
+cd Contact-Manager
 ```
 2.	Build and start the containers:
 ```
