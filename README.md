@@ -1,4 +1,4 @@
-# Suprabrokers Contacts Manager
+# Contacts Manager
 
 A Django + DRF project for managing contacts, with CSV import/export, weather info per contact, and a lightweight frontend using Bootstrap & Notyf for notifications. Dockerized for easy setup.
 
